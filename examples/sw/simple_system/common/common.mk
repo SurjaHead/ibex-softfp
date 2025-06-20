@@ -8,7 +8,7 @@ COMMON_SRCS = $(wildcard $(COMMON_DIR)/*.c)
 INCS := -I$(COMMON_DIR)
 
 # ARCH = rv32im # to disable compressed instructions
-ARCH ?= rv32imc
+ARCH ?= rv32imczicsr
 
 ifdef PROGRAM
 PROGRAM_C := $(PROGRAM).c
@@ -27,10 +27,10 @@ OBJDUMP ?= $(CROSS_COMPILE)objdump
 
 LINKER_SCRIPT ?= $(COMMON_DIR)/link.ld
 CRT ?= $(COMMON_DIR)/crt0.S
-CFLAGS ?= -march=$(ARCH) -mabi=ilp32 -static -mcmodel=medany -Wall -g -Os\
+CFLAGS ?= -march=$(ARCH) -mabi=ilp32 -static -mcmodel=medany -Wall -g -O3\
 	-fvisibility=hidden -nostdlib -nostartfiles -ffreestanding $(PROGRAM_CFLAGS)
 
-OBJS := ${C_SRCS:.c=.o} ${ASM_SRCS:.S=.o} ${CRT:.S=.o}
+OBJS := ${C_SRCS:.c=.o} ${ASM_SRCS:.S=.o} ${CRT:.S=.o} $(EXTRA_OBJS)
 DEPS = $(OBJS:%.o=%.d)
 
 ifdef PROGRAM
@@ -38,6 +38,13 @@ OUTFILES := $(PROGRAM).elf $(PROGRAM).vmem $(PROGRAM).bin
 else
 OUTFILES := $(OBJS)
 endif
+
+# Add any extra source directories
+VPATH := $(PROGRAM_DIR) $(EXTRA_SRC_DIRS)
+
+# Common sources (needed for all programs)
+COMMON_DIR  := $(PROGRAM_DIR)/../common
+C_SRCS      += $(COMMON_DIR)/simple_system_common.c
 
 all: $(OUTFILES)
 

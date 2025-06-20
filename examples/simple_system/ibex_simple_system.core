@@ -110,9 +110,9 @@ parameters:
 
   MHPMCounterNum:
     datatype: int
-    paramtype: vlogparam
-    default: 0
     description: Number of performance monitor event counters [0/29]
+    default: 0
+    paramtype: vlogparam
 
   MHPMCounterWidth:
     datatype: int

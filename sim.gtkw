@@ -1,0 +1,60 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Fri Jun 20 17:48:07 2025
+[*]
+[dumpfile] "/Users/suryasure/projects/ibex/sim.fst"
+[dumpfile_mtime] "Fri Jun 20 17:47:53 2025"
+[dumpfile_size] 1126240
+[savefile] "/Users/suryasure/projects/ibex/sim.gtkw"
+[timestart] 11791
+[size] 1344 600
+[pos] -1 -1
+*-5.700000 11907 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+[markername] AA
+[markername] BB
+[markername] CC
+[markername] DD
+[markername] EE
+[markername] FF
+[markername] GG
+[markername] HH
+[markername] II
+[markername] JJ
+[markername] KK
+[markername] LL
+[markername] MM
+[markername] NN
+[markername] OO
+[markername] PP
+[markername] QQ
+[markername] RR
+[markername] SS
+[markername] TT
+[markername] UU
+[markername] VV
+[markername] WW
+[markername] XX
+[markername] YY
+[markername] ZZ
+[treeopen] TOP.
+[treeopen] TOP.ibex_simple_system.
+[treeopen] TOP.ibex_simple_system.u_bus.
+[treeopen] TOP.ibex_simple_system.u_top.
+[treeopen] TOP.ibex_simple_system.u_top.u_ibex_top.
+[treeopen] TOP.ibex_simple_system.u_top.u_ibex_top.gen_regfile_ff.
+[treeopen] TOP.ibex_simple_system.u_top.u_ibex_top.gen_regfile_ff.register_file_i.
+[sst_width] 255
+[signals_width] 218
+[sst_expanded] 1
+[sst_vpaned_height] 345
+@28
+TOP.ibex_simple_system.u_bus.host_req_i[0]
+TOP.ibex_simple_system.u_bus.host_we_i[0]
+@820
+TOP.ibex_simple_system.u_bus.device_wdata_o[1][31:0]
+TOP.ibex_simple_system.u_bus.device_wdata_o[2][31:0]
+@23
+TOP.ibex_simple_system.u_top.u_ibex_top.gen_regfile_ff.register_file_i.g_rf_flops[10].rf_reg_q[31:0]
+TOP.ibex_simple_system.u_top.u_ibex_top.gen_regfile_ff.register_file_i.g_rf_flops[11].rf_reg_q[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

@@ -115,3 +115,18 @@ test-cfg:
 .PHONY: python-lint
 python-lint:
 	$(MAKE) -C util lint
+
+CC = gcc
+CFLAGS = -I. -Wall -Wextra
+LDFLAGS = -lm
+
+all: test_activations
+
+test_activations: test_activations.c activation_functions.c lib/softfp/softfp.c
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+run: test_activations
+	./test_activations
+
+clean:
+	rm -f test_activations

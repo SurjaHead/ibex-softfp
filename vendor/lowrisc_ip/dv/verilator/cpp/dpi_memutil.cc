@@ -8,7 +8,7 @@
 #include <cstring>
 #include <fcntl.h>
 #include <iostream>
-#include <libelf.h>
+#include <libelf/libelf.h>
 #include <sstream>
 #include <sys/stat.h>
 #include <unistd.h>
