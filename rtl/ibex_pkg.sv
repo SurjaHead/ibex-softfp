@@ -58,10 +58,12 @@ package ibex_pkg;
 
   typedef enum logic [6:0] {
     OPCODE_LOAD     = 7'h03,
+    OPCODE_CUSTOM0  = 7'h0b,  // Custom0 FPU opcode (fp_add)
     OPCODE_MISC_MEM = 7'h0f,
     OPCODE_OP_IMM   = 7'h13,
     OPCODE_AUIPC    = 7'h17,
     OPCODE_STORE    = 7'h23,
+    OPCODE_FPU      = 7'h2b,  // Custom1 FPU opcode (fp_mul)
     OPCODE_OP       = 7'h33,
     OPCODE_LUI      = 7'h37,
     OPCODE_BRANCH   = 7'h63,
@@ -191,6 +193,14 @@ package ibex_pkg;
     MD_OP_DIV,
     MD_OP_REM
   } md_op_e;
+
+  typedef enum logic [1:0] {
+    // FPU operations
+    FPU_OP_ADD,
+    FPU_OP_MUL,
+    FPU_OP_RESERVED1,
+    FPU_OP_RESERVED2
+  } fpu_op_e;
 
 
   //////////////////////////////////

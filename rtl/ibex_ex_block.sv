@@ -39,6 +39,11 @@ module ibex_ex_block #(
   input  logic                  multdiv_ready_id_i,
   input  logic                  data_ind_timing_i,
 
+  // FPU
+  input  ibex_pkg::fpu_op_e     fpu_operator_i,
+  input  logic                  fpu_en_i,              // dynamic enable signal, for FSM control
+  input  logic                  fpu_sel_i,             // static decoder output, for data muxes
+
   // intermediate val reg
   output logic [1:0]            imd_val_we_o,
   output logic [33:0]           imd_val_d_o[2],
@@ -67,6 +72,10 @@ module ibex_ex_block #(
   logic [ 1:0] alu_imd_val_we;
   logic [33:0] multdiv_imd_val_d[2];
   logic [ 1:0] multdiv_imd_val_we;
+  
+  // FPU selection is handled in ALU module directly, mark as unused here
+  logic unused_fpu_sel;
+  assign unused_fpu_sel = fpu_sel_i;
 
   /*
     The multdiv_i output is never selected if RV32M=RV32MNone
@@ -126,6 +135,8 @@ module ibex_ex_block #(
     .multdiv_operand_a_i(multdiv_alu_operand_a),
     .multdiv_operand_b_i(multdiv_alu_operand_b),
     .multdiv_sel_i      (multdiv_sel),
+    .fpu_en_i           (fpu_en_i),
+    .fpu_operator_i     (fpu_operator_i),
     .adder_result_o     (alu_adder_result_ex_o),
     .adder_result_ext_o (alu_adder_result_ext),
     .result_o           (alu_result),

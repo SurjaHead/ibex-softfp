@@ -283,6 +283,11 @@ module ibex_core import ibex_pkg::*; #(
   logic [31:0] multdiv_operand_b_ex;
   logic        multdiv_ready_id;
 
+  // FPU Control
+  logic        fpu_en_ex;
+  logic        fpu_sel_ex;
+  fpu_op_e     fpu_operator_ex;
+
   // CSR control
   logic        csr_access;
   csr_op_e     csr_op;
@@ -615,6 +620,11 @@ module ibex_core import ibex_pkg::*; #(
     .multdiv_operand_b_ex_o  (multdiv_operand_b_ex),
     .multdiv_ready_id_o      (multdiv_ready_id),
 
+    // FPU ID/EX
+    .fpu_en_ex_o       (fpu_en_ex),
+    .fpu_sel_ex_o      (fpu_sel_ex),
+    .fpu_operator_ex_o (fpu_operator_ex),
+
     // CSR ID/EX
     .csr_access_o         (csr_access),
     .csr_op_o             (csr_op),
@@ -738,6 +748,11 @@ module ibex_core import ibex_pkg::*; #(
     .multdiv_operand_b_i  (multdiv_operand_b_ex),
     .multdiv_ready_id_i   (multdiv_ready_id),
     .data_ind_timing_i    (data_ind_timing),
+
+    // FPU signal from ID stage
+    .fpu_operator_i       (fpu_operator_ex),
+    .fpu_en_i             (fpu_en_ex),
+    .fpu_sel_i            (fpu_sel_ex),
 
     // Intermediate value register
     .imd_val_we_o(imd_val_we_ex),

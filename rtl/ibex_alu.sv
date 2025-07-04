@@ -20,6 +20,10 @@ module ibex_alu #(
 
   input  logic              multdiv_sel_i,
 
+  // FPU interface
+  input  logic              fpu_en_i,
+  input  ibex_pkg::fpu_op_e fpu_operator_i,
+
   input  logic [31:0]       imd_val_q_i[2],
   output logic [31:0]       imd_val_d_o[2],
   output logic [1:0]        imd_val_we_o,
@@ -35,6 +39,13 @@ module ibex_alu #(
 
   logic [31:0] operand_a_rev;
   logic [32:0] operand_b_neg;
+
+  // FPU signals
+  logic [31:0] fpu_result;
+  logic        unused_fpu_valid;
+  logic        unused_fpu_overflow;
+  logic        unused_fpu_underflow;
+  logic        unused_fpu_invalid;
 
   // bit reverse operand_a for left shifts and bit counting
   for (genvar k = 0; k < 32; k++) begin : gen_rev_operand_a
@@ -171,6 +182,24 @@ module ibex_alu #(
   end
 
   assign comparison_result_o = cmp_result;
+
+  /////////
+  // FPU //
+  /////////
+
+  ibex_fpu i_fpu (
+    .clk_i          (1'b0),              // FPU is combinational, no clock needed
+    .rst_ni         (1'b1),              // FPU is combinational, no reset needed
+    .fpu_en_i       (fpu_en_i),
+    .fpu_operator_i (fpu_operator_i),
+    .operand_a_i    (operand_a_i),
+    .operand_b_i    (operand_b_i),
+    .result_o       (fpu_result),
+    .valid_o        (unused_fpu_valid),
+    .overflow_o     (unused_fpu_overflow),
+    .underflow_o    (unused_fpu_underflow),
+    .invalid_o      (unused_fpu_invalid)
+  );
 
   ///////////
   // Shift //
@@ -1319,7 +1348,11 @@ module ibex_alu #(
   always_comb begin
     result_o   = '0;
 
-    unique case (operator_i)
+    // FPU result override
+    if (fpu_en_i) begin
+      result_o = fpu_result;
+    end else begin
+      unique case (operator_i)
       // Bitwise Logic Operations (negate: RV32B)
       ALU_XOR,  ALU_XNOR,
       ALU_OR,   ALU_ORN,
@@ -1391,7 +1424,8 @@ module ibex_alu #(
       ALU_CLMULH: result_o = clmul_result;
 
       default: ;
-    endcase
+      endcase
+    end
   end
 
   logic unused_shift_amt_compl;

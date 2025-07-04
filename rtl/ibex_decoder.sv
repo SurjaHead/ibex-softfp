@@ -80,6 +80,11 @@ module ibex_decoder #(
   output ibex_pkg::md_op_e     multdiv_operator_o,
   output logic [1:0]           multdiv_signed_mode_o,
 
+  // FPU
+  output logic                 fpu_en_o,              // perform floating point operation
+  output logic                 fpu_sel_o,             // as above but static, for data muxes
+  output ibex_pkg::fpu_op_e    fpu_operator_o,        // FPU operation
+
   // CSRs
   output logic                 csr_access_o,          // access to CSR
   output ibex_pkg::csr_op_e    csr_op_o,              // operation to perform on CSR
@@ -590,6 +595,36 @@ module ibex_decoder #(
         endcase
       end
 
+      //////////
+      // FPU  //
+      //////////
+
+      OPCODE_CUSTOM0: begin  // Custom0 FPU (fp_add)
+        rf_ren_a_o         = 1'b1;
+        rf_ren_b_o         = 1'b1;
+        rf_we              = 1'b1;
+        rf_wdata_sel_o     = RF_WD_EX;
+        
+        // Instruction validation (func3 field checking)
+        unique case (instr[14:12])
+          3'b000: ; // Valid for fp_add (func3=0, func7=0)
+          default: illegal_insn = 1'b1;
+        endcase
+      end
+
+      OPCODE_FPU: begin  // Custom1 FPU (fp_mul)
+        rf_ren_a_o         = 1'b1;
+        rf_ren_b_o         = 1'b1;
+        rf_we              = 1'b1;
+        rf_wdata_sel_o     = RF_WD_EX;
+        
+        // Instruction validation (func3 field checking)
+        unique case (instr[14:12])
+          3'b000: ; // Valid for fp_mul (func3=0, func7=0)
+          default: illegal_insn = 1'b1;
+        endcase
+      end
+
       OPCODE_SYSTEM: begin
         if (instr[14:12] == 3'b000) begin
           // non CSR related SYSTEM instructions
@@ -688,6 +723,8 @@ module ibex_decoder #(
     alu_multicycle_o   = 1'b0;
     mult_sel_o         = 1'b0;
     div_sel_o          = 1'b0;
+    fpu_sel_o          = 1'b0;
+    fpu_operator_o     = FPU_OP_ADD;
 
     unique case (opcode_alu)
 
@@ -1135,6 +1172,26 @@ module ibex_decoder #(
         end
       end
 
+      //////////
+      // FPU  //
+      //////////
+
+      OPCODE_CUSTOM0: begin  // Custom0 FPU (fp_add)
+        alu_op_a_mux_sel_o = OP_A_REG_A;
+        alu_op_b_mux_sel_o = OP_B_REG_B;
+        alu_operator_o     = ALU_ADD;  // Dummy ALU operation, actual FPU operation controlled by fpu_operator
+        fpu_sel_o          = 1'b1;
+        fpu_operator_o     = FPU_OP_ADD;  // Always ADD for custom0
+      end
+
+      OPCODE_FPU: begin  // Custom1 FPU (fp_mul)
+        alu_op_a_mux_sel_o = OP_A_REG_A;
+        alu_op_b_mux_sel_o = OP_B_REG_B;
+        alu_operator_o     = ALU_ADD;  // Dummy ALU operation, actual FPU operation controlled by fpu_operator
+        fpu_sel_o          = 1'b1;
+        fpu_operator_o     = FPU_OP_MUL;  // Always MUL for custom1
+      end
+
       /////////////
       // Special //
       /////////////
@@ -1191,6 +1248,9 @@ module ibex_decoder #(
   // do not enable multdiv in case of illegal instruction exceptions
   assign mult_en_o = illegal_insn ? 1'b0 : mult_sel_o;
   assign div_en_o  = illegal_insn ? 1'b0 : div_sel_o;
+  
+  // do not enable fpu in case of illegal instruction exceptions
+  assign fpu_en_o = illegal_insn ? 1'b0 : fpu_sel_o;
 
   // make sure instructions accessing non-available registers in RV32E cause illegal
   // instruction exceptions

@@ -92,6 +92,11 @@ module ibex_id_stage #(
   output logic [31:0]               multdiv_operand_b_ex_o,
   output logic                      multdiv_ready_id_o,
 
+  // FPU
+  output logic                      fpu_en_ex_o,
+  output logic                      fpu_sel_ex_o,
+  output ibex_pkg::fpu_op_e         fpu_operator_ex_o,
+
   // CSR
   output logic                      csr_access_o,
   output ibex_pkg::csr_op_e         csr_op_o,
@@ -282,6 +287,10 @@ module ibex_id_stage #(
   logic        multdiv_en_dec;
   md_op_e      multdiv_operator;
   logic [1:0]  multdiv_signed_mode;
+
+  // FPU Control
+  logic        fpu_en_id, fpu_en_dec;   // use floating point unit
+  fpu_op_e     fpu_operator;
 
   // Data Memory Control
   logic        lsu_we;
@@ -496,6 +505,11 @@ module ibex_id_stage #(
     .multdiv_operator_o   (multdiv_operator),
     .multdiv_signed_mode_o(multdiv_signed_mode),
 
+    // FPU
+    .fpu_en_o             (fpu_en_dec),
+    .fpu_sel_o            (fpu_sel_ex_o),
+    .fpu_operator_o       (fpu_operator),
+
     // CSRs
     .csr_access_o(csr_access_o),
     .csr_op_o    (csr_op_o),
@@ -642,6 +656,7 @@ module ibex_id_stage #(
   assign lsu_req         = instr_executing ? data_req_allowed & lsu_req_dec  : 1'b0;
   assign mult_en_id      = instr_executing ? mult_en_dec                     : 1'b0;
   assign div_en_id       = instr_executing ? div_en_dec                      : 1'b0;
+  assign fpu_en_id       = instr_executing ? fpu_en_dec                      : 1'b0;
 
   assign lsu_req_o               = lsu_req;
   assign lsu_we_o                = lsu_we;
@@ -665,6 +680,9 @@ module ibex_id_stage #(
   assign multdiv_signed_mode_ex_o    = multdiv_signed_mode;
   assign multdiv_operand_a_ex_o      = rf_rdata_a_fwd;
   assign multdiv_operand_b_ex_o      = rf_rdata_b_fwd;
+
+  assign fpu_en_ex_o                 = fpu_en_id;
+  assign fpu_operator_ex_o           = fpu_operator;
 
   ////////////////////////
   // Branch set control //

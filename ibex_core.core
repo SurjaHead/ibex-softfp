@@ -26,6 +26,7 @@ filesets:
       - rtl/ibex_decoder.sv
       - rtl/ibex_ex_block.sv
       - rtl/ibex_fetch_fifo.sv
+      - rtl/ibex_fpu.sv
       - rtl/ibex_id_stage.sv
       - rtl/ibex_if_stage.sv
       - rtl/ibex_load_store_unit.sv
