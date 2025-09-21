@@ -56,6 +56,30 @@ float mish(float x) {
     return x * soft_tanh(sp);
 }
 
+/* 9. Softmax */
+void softmax(const float* input, float* output, int size) {
+    /* Find the maximum value for numerical stability */
+    float max_val = input[0];
+    for (int i = 1; i < size; i++) {
+        if (input[i] > max_val) {
+            max_val = input[i];
+        }
+    }
+    
+    /* Compute sum of exponentials (shifted by max_val for stability) */
+    float sum_exp = 0.0f;
+    for (int i = 0; i < size; i++) {
+        float exp_val = soft_exp(input[i] - max_val);
+        output[i] = exp_val;
+        sum_exp += exp_val;
+    }
+    
+    /* Normalize by the sum */
+    for (int i = 0; i < size; i++) {
+        output[i] = output[i] / sum_exp;
+    }
+}
+
 /* ---------------- primitive operations for benchmarking ---------------- */
 
 float op_exp(float x)           { return soft_exp(x); }

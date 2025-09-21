@@ -9,6 +9,7 @@ float sigmoid(float x);
 float tanh_act(float x);
 float gelu(float x);
 float mish(float x);
+void softmax(const float* input, float* output, int size);
 
 /* Stand-alone math ops (SoftFP-backed) so timing of a single
  * operation can be measured easily. */

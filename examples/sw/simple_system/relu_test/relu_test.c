@@ -31,6 +31,10 @@ int main(void) {
   volatile unsigned int cycles_before, cycles_after, cycles_taken;
   volatile float input_val = -4.0f;
   volatile float result_float;
+  
+  // Test data for softmax
+  volatile float softmax_input[4] = {1.0f, 2.0f, 3.0f, 4.0f};
+  volatile float softmax_output[4];
 
   /* --------------------------------------------------
    * Choose ONE activation to benchmark by uncommenting
@@ -45,13 +49,23 @@ int main(void) {
   // result_float = tanh_act(input_val);
   // result_float = gelu(input_val);
   // result_float = mish(input_val);
+  // softmax((float*)softmax_input, (float*)softmax_output, 4);
 
-  // --- Measure a single sigmoid call ---
+  // --- Measure a single activation call ---
   enable_cycle_counter();
   pcount_reset();
 
   cycles_before = pcount_get();
-  result_float = mish(input_val);
+  
+  /* Choose ONE of the following measurement blocks: */
+  
+  // For single-value activations (uncomment one):
+  // result_float = mish(input_val);
+  
+  // For softmax (uncomment this block instead):
+  softmax((float*)softmax_input, (float*)softmax_output, 4);
+  result_float = softmax_output[0];  // Use first output for result display
+  
   cycles_after = pcount_get();
 
   cycles_taken = cycles_after - cycles_before;
@@ -60,7 +74,7 @@ int main(void) {
   puthex(cycles_taken);
   putchar('\n');
 
-  puts("mish result (float bits hex): 0x");
+  puts("result (float bits hex): 0x");
   union { float f; uint32_t u32; } conv; conv.f = result_float;
   puthex(conv.u32);
   putchar('\n');
